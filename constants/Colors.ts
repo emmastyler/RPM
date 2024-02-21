@@ -1,5 +1,10 @@
-const tintColorLight = '#2f95dc';
-const tintColorDark = '#fff';
+const tintColorLight = '#000';
+const tintColorDark = '#7761FF';
+const borderColor = '#CBD5E1';
+const searchBarBgColor = '#F3F3F3'
+const searchBarText = '#979797'
+const flatListBorderColor = '#E6E6E6'
+const buttonSecondaryColor = '#F7F0FF'
 
 export default {
   light: {
@@ -8,12 +13,22 @@ export default {
     tint: tintColorLight,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorLight,
+    borderColor:borderColor,
+    searchBarBgColor,
+    searchBarText,
+    flatListBorderColor,
+    buttonSecondaryColor
   },
   dark: {
-    text: '#fff',
-    background: '#000',
+    text: '#000',
+    background: '#fff',
     tint: tintColorDark,
-    tabIconDefault: '#ccc',
+    tabIconDefault: '#B0B0B0',
     tabIconSelected: tintColorDark,
+    borderColor:borderColor,
+    searchBarBgColor,
+    searchBarText,
+    flatListBorderColor,
+    buttonSecondaryColor
   },
 };
