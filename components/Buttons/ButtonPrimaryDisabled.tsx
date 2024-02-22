@@ -5,15 +5,16 @@ import { MonoText } from "../StyledText";
 import { useColorScheme } from "@/components/useColorScheme";
 import Colors from "@/constants/Colors";
 
-export default function ButtonSecondary({ title }: { title: string }) {
+export default function ButtonPrimaryDisabled({ title }: { title: string }) {
   const colorScheme = useColorScheme();
 
   return (
     <View
       style={[
-        styles.buttonSecondaryContainer,
+        styles.buttonPrimaryContainer,
         {
-          backgroundColor: Colors[colorScheme ?? "light"].buttonSecondaryColor,
+          backgroundColor:
+            Colors[colorScheme ?? "light"].buttonPrimaryDisabledColor,
         },
       ]}
     >
@@ -23,18 +24,17 @@ export default function ButtonSecondary({ title }: { title: string }) {
 }
 
 const styles = StyleSheet.create({
-  buttonSecondaryContainer: {
+  buttonPrimaryContainer: {
     alignItems: "center",
     justifyContent: "center",
     height: 56,
     borderRadius: 15,
     paddingHorizontal: 20,
     paddingVertical: 16,
-    marginTop: 8,
   },
   title: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#7761FF",
+    color: "#848484",
   },
 });

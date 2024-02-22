@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from "react";
-import { View, StyleSheet, Platform } from "react-native";
+import { View, StyleSheet, Platform, Pressable } from "react-native";
 import {
   BottomSheetBackdropProps,
   BottomSheetModal,
@@ -17,7 +17,7 @@ const CustomBottomSheet = () => {
   // ref
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
-  // variables
+  // variables for snapshots
   const snapPoints = useMemo(
     () => ["25%", Platform.OS === "ios" ? "55" : "65"],
     []
@@ -48,7 +48,7 @@ const CustomBottomSheet = () => {
       ),
     }));
 
-    // styles
+    // styles for backdrop
     const containerStyle = useMemo(
       () => [
         style,
@@ -63,19 +63,28 @@ const CustomBottomSheet = () => {
     return <Animated.View style={containerStyle} />;
   };
 
-  // renders
   return (
     <>
       <View style={styles.container}>
-        <FilterSvg onPress={handlePresentModalPress} />
+        <Pressable onPress={handlePresentModalPress}>
+          <FilterSvg />
+        </Pressable>
         <BottomSheetModal
           ref={bottomSheetModalRef}
           index={1}
           snapPoints={snapPoints}
           onChange={handleSheetChanges}
-          backdropComponent={CustomBackdrop} //add this
+          backdropComponent={CustomBackdrop}
+          handleComponent={() => (
+            <View style={styles.closeLineContainer}>
+              <View style={styles.closeLine}></View>
+            </View>
+          )}
         >
-          <ScrollView style={styles.contentContainer}>
+          <ScrollView
+            style={styles.contentContainer}
+            showsHorizontalScrollIndicator={false}
+          >
             <Filter closeBottomSheet={handleCloseBottomSheet} />
           </ScrollView>
         </BottomSheetModal>
@@ -95,6 +104,16 @@ const styles = StyleSheet.create({
     right: 10,
     color: "white",
     fontSize: 16,
+  },
+  closeLineContainer: {
+    alignSelf: "center",
+  },
+  closeLine: {
+    width: 40,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#D9D9D9",
+    marginTop: 9,
   },
 });
 

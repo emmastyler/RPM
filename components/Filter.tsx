@@ -1,17 +1,22 @@
-import { Platform, Pressable, StyleSheet, TextInput } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Pressable,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import { View } from "@/components/Themed";
 import { MonoText } from "./StyledText";
 import CloseIcon from "../assets/svg/closeIcon.svg";
 import UnSelectedCheckBoxIcon from "../assets/svg/unSelectedCheckBoxIcon.svg";
+import SelectedCheckBoxIcon from "../assets/svg/selectedCheckBoxIcon.svg";
+import DisabledCheckBoxIcon from "../assets/svg/disabledCheckBoxIcon.svg";
+import AsterikIcon from "../assets/svg/asterik.svg";
 import Colors from "@/constants/Colors";
-import { useColorScheme } from "@/components/useColorScheme";
-import { useState } from "react";
-import ButtonPrimary from "./Buttons/ButtonPrimary";
-import ButtonSecondary from "./Buttons/ButtonSecondary";
+import ButtonPrimaryDisabled from "./Buttons/ButtonPrimaryDisabled";
+import ButtonSecondaryDisabled from "./Buttons/ButtonSecondaryDisabled";
+import CustomCalendarButton from "../components/CustomCalenderButton";
 
-{
-  /* from the filter component*/
-}
 interface FilterProps {
   closeBottomSheet: () => void;
 }
@@ -27,104 +32,163 @@ const Filter: React.FC<FilterProps> = ({ closeBottomSheet }) => {
     closeBottomSheet();
   };
 
-  const colorScheme = useColorScheme();
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const allTypes = ["All Type", "Eye Dilation", "Heart Rate"];
+
+  useEffect(() => {
+    console.log("Selected Types:", selectedTypes);
+  }, [selectedTypes]);
+
+  const handleTransactionTypeSelect = (type: string) => {
+    if (type === "All Type") {
+      if (selectedTypes.includes("All Type")) {
+        setSelectedTypes([]);
+      } else {
+        setSelectedTypes([type]);
+      }
+    } else {
+      if (selectedTypes.includes("All Type")) {
+        setSelectedTypes([type]);
+      } else {
+        const updatedSelectedTypes = selectedTypes.includes(type)
+          ? selectedTypes.filter((selectedType) => selectedType !== type)
+          : [...selectedTypes, type];
+        setSelectedTypes(updatedSelectedTypes);
+      }
+    }
+  };
 
   return (
-    <View style={styles.filterContainer}>
-      <View style={styles.headingAndIcon}>
+    <View style={styles.container}>
+      <View style={styles.header}>
         <MonoText style={styles.filterHeading}>Filter</MonoText>
-        <CloseIcon onPress={handleCloseBottomSheet} />
+        <Pressable>
+          <CloseIcon onPress={handleCloseBottomSheet} />
+        </Pressable>
       </View>
-      <MonoText style={{ fontWeight: "400", fontSize: 14, marginBottom: 4 }}>
-        Transaction Type
-      </MonoText>
-      {/* Option for All*/}
-      <View style={styles.transactionType}>
-        <UnSelectedCheckBoxIcon style={{ margin: 12 }} />
-        <MonoText>All Type</MonoText>
+      <View style={styles.content}>
+        <View style={styles.sectionTitle}>
+          <MonoText style={styles.sectionHeading}>Transaction Type</MonoText>
+          <AsterikIcon style={styles.asterikIcon} />
+        </View>
+        <View>
+          {allTypes.map((type, index) => (
+            <View key={type}>
+              <TouchableOpacity
+                style={styles.option}
+                onPress={() => handleTransactionTypeSelect(type)}
+                disabled={
+                  type !== "All Type" && selectedTypes.includes("All Type")
+                }
+              >
+                {selectedTypes.includes(type) ? (
+                  <SelectedCheckBoxIcon style={styles.icon} />
+                ) : type === "All Type" &&
+                  selectedTypes.includes("All Type") ? (
+                  <SelectedCheckBoxIcon style={styles.icon} />
+                ) : type === "All Type" &&
+                  !selectedTypes.includes("All Type") ? (
+                  <UnSelectedCheckBoxIcon style={styles.icon} />
+                ) : selectedTypes.includes("All Type") ? (
+                  <DisabledCheckBoxIcon />
+                ) : (
+                  <UnSelectedCheckBoxIcon style={styles.icon} />
+                )}
+                <MonoText>{type}</MonoText>
+              </TouchableOpacity>
+              {index !== allTypes.length - 1 && (
+                <View style={styles.separator} darkColor="#E6E6E6" />
+              )}
+            </View>
+          ))}
+        </View>
       </View>
-      <View style={styles.separator} darkColor="#E6E6E6" />
 
-      {/* Option for All ends Here*/}
+      <View>
+        <View style={styles.sectionTitle}>
+          <MonoText style={styles.sectionHeading}>
+            Transaction date Range
+          </MonoText>
+          <AsterikIcon style={styles.asterikIcon} />
+        </View>
 
-      {/* Option for Eye dilation*/}
-      <View style={styles.transactionType}>
-        <UnSelectedCheckBoxIcon style={{ margin: 12 }} />
-        <MonoText>Eye dilation</MonoText>
+        <View style={styles.dateRange}>
+          <MonoText style={{ color: Colors.light.searchBarText }}>
+            MM/DD/YY
+          </MonoText>
+          <CustomCalendarButton />
+        </View>
       </View>
-      <View style={styles.separator} darkColor="#E6E6E6" />
-      {/* Option for Eye dilation ends here*/}
 
-      {/* Option for  Heart rate*/}
-      <View style={[styles.transactionType, { marginBottom: 16 }]}>
-        <UnSelectedCheckBoxIcon style={{ margin: 12 }} />
-        <MonoText>Heart Rate</MonoText>
+      <View style={styles.buttonsContainer}>
+        <ButtonPrimaryDisabled title="Apply Filter" />
+        <ButtonSecondaryDisabled title="Clear Filter" />
       </View>
-      {/* Option for Heart rate  ends here*/}
-
-      <MonoText style={{ fontWeight: "400", fontSize: 14, marginBottom: 8 }}>
-        Transaction date Range
-      </MonoText>
-
-      <View
-        style={[
-          styles.transactionDateContainer,
-          { borderColor: Colors[colorScheme ?? "light"].borderColor },
-        ]}
-      >
-        <TextInput
-          style={styles.textInput}
-          onChangeText={onChangeInput}
-          value={dateRange}
-          placeholder="MM/DD/YYYY"
-        />
-      </View>
-      <ButtonPrimary title="Apply Filter" />
-      <ButtonSecondary title="Clear Filter" />
-
-      {/* Margin Container */}
-      <View style={{ marginVertical: 8 }}></View>
-      {/* Margin Container Ends here*/}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  filterContainer: {
-    marginHorizontal: 16,
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 10,
   },
-  headingAndIcon: {
-    display: "flex",
+  header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    height: 32,
-    marginBottom: 8,
+    alignItems: "center",
+    marginBottom: 16,
   },
   filterHeading: {
     fontWeight: "700",
     fontSize: 24,
   },
+  content: {
+    flex: 1,
+  },
+  sectionTitle: {
+    marginBottom: 8,
+    display: "flex",
+    flexDirection: "row",
+  },
+  sectionHeading: {
+    fontWeight: "400",
+    fontSize: 14,
+  },
+  option: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: 48,
+    marginBottom: 8,
+  },
+  icon: {
+    marginHorizontal: 12,
+  },
+  dateRange: {
+    height: 56,
+    borderWidth: 1,
+    borderColor: Colors.light.borderColor,
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 16,
+    fontWeight: "400",
+    marginTop: 8,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  buttonsContainer: {
+    marginVertical: 8,
+  },
   separator: {
     height: 1,
     marginHorizontal: 16,
   },
-  transactionDateContainer: {
-    height: 56,
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-  },
-  textInput: {
-    fontSize: 16,
-    fontWeight: "400",
-  },
-  transactionType: {
-    display: "flex",
-    flexDirection: "row",
-    height: 48,
-    alignItems: "center",
+  asterikIcon: {
+    marginTop: 4,
+    marginLeft: 8,
   },
 });
+
 export default Filter;
